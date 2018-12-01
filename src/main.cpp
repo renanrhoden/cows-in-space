@@ -346,7 +346,10 @@ bool hitcoelho (float x, float z)
         return true;
     }
     else return false;
-}
+
+
+uniform vec4 bbox_min;
+uniform vec4 bbox_max;
 
 bool hitvaca (float x, float z)
 {
@@ -522,7 +525,7 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
     LoadTextureImage("../../data/moon.jpg"); //TextureImage2
     LoadTextureImage("../../data/stars.png");//TextureImage3
-    LoadTextureImage("../../data/woodtex.jpg");//TextureImage4
+    LoadTextureImage("../../data/background.jpg");//TextureImage4
     LoadTextureImage("../../data/cow.jpg");//TextureImage5
     LoadTextureImage("../../data/golden.jpg");//TextureImage6
     LoadTextureImage("../../data/gameover.png");//TextureImage11
@@ -666,6 +669,7 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
         #define COW 3
+        #define LAVA 4
         #define GAMEOVER 9
 
         // Desenhamos o modelo da esfera
@@ -685,12 +689,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
-        // Desenhamos o plano do chão
+        // Desenhamos o chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
                 * Matrix_Scale (50.0f,50.0f,50.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
         //PLANE GAME OVER
         model = Matrix_Translate(400.0f,0.0f,396.0f)
                 * Matrix_Scale (1.5f,1.5f,1.5f)
