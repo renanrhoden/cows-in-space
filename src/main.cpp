@@ -521,18 +521,12 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
-    LoadTextureImage("../../data/grass.jpg"); //TextureImage2
-    LoadTextureImage("../../data/stars.png");//TextureImage3
-    LoadTextureImage("../../data/woodtex.jpg");//TextureImage4
-    LoadTextureImage("../../data/cow.jpg");//TextureImage5
-    LoadTextureImage("../../data/golden.jpg");//TextureImage6
-    LoadTextureImage("../../data/house1.jpg");//TextureImage7
-    LoadTextureImage("../../data/house2.jpg");//TextureImage8
-    LoadTextureImage("../../data/house3.jpg");//TextureImage9
-    LoadTextureImage("../../data/house4.jpg");//TextureImage10
-    LoadTextureImage("../../data/gameover.png");//TextureImage11
+    LoadTextureImage("../../data/moon.jpg"); //TextureImage1
+    LoadTextureImage("../../data/stars.png");//TextureImage2
+    LoadTextureImage("../../data/woodtex.jpg");//TextureImage3
+    LoadTextureImage("../../data/cow.jpg");//TextureImage4
+    LoadTextureImage("../../data/golden.jpg");//TextureImage5
+    LoadTextureImage("../../data/gameover.png");//TextureImage6
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -554,12 +548,6 @@ int main(int argc, char* argv[])
     ObjModel fencemodel("../../data/fence.obj");
     ComputeNormals(&fencemodel);
     BuildTrianglesAndAddToVirtualScene(&fencemodel);
-
-    ObjModel housemodel("../../data/house.obj");
-    ComputeNormals(&housemodel);
-    BuildTrianglesAndAddToVirtualScene(&housemodel);
-
-
 
     if ( argc > 1 )
     {
@@ -684,11 +672,7 @@ int main(int argc, char* argv[])
         #define PLANE  2
         #define COW 3
         #define FENCE 4
-        #define HOUSE 5
-        #define HOUSE2 6
-        #define HOUSE3 7
-        #define HOUSE4 8
-        #define GAMEOVER 9
+        #define GAMEOVER 5
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -707,38 +691,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
-        // Desenhamos o modelo das CASAS
-        model = Matrix_Translate(-5.0f,-1.0f,-20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(-5.0f,-1.0f,20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f)
-              * Matrix_Rotate_Y(0.5f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE2);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(15.0f,-1.0f,-20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f)
-              * Matrix_Rotate_Y(0.8f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE3);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(15.0f,-1.0f,20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE4);
-        DrawVirtualObject("house");
         // Desenhamos o plano do chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
                 * Matrix_Scale (50.0f,50.0f,50.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
         //PLANE GAME OVER
         model = Matrix_Translate(400.0f,0.0f,396.0f)
                 * Matrix_Scale (1.5f,1.5f,1.5f)
@@ -1070,18 +1029,12 @@ void LoadShadersFromFiles()
 
     // Variáveis em "shader_fragment.glsl" para acesso das imagens de textura
     glUseProgram(program_id);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage0"), 0);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage1"), 1);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage8"), 8);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage9"), 9);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage10"), 10);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage11"), 11);
     glUseProgram(0);
 }
 

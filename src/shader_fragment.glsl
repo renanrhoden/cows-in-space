@@ -24,11 +24,7 @@ uniform mat4 projection;
 #define PLANE  2
 #define COW 3
 #define FENCE 4
-#define HOUSE 5
-#define HOUSE2 6
-#define HOUSE3 7
-#define HOUSE4 8
-#define GAMEOVER 9
+#define GAMEOVER 5
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -36,19 +32,12 @@ uniform vec4 bbox_min;
 uniform vec4 bbox_max;
 
 // Variáveis para acesso das imagens de textura
-uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
 uniform sampler2D TextureImage6;
-uniform sampler2D TextureImage7;
-uniform sampler2D TextureImage8;
-uniform sampler2D TextureImage9;
-uniform sampler2D TextureImage10;
-uniform sampler2D TextureImage11;
-
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -154,26 +143,6 @@ void main()
         V = (position_model.y - miny)/(maxy - miny);
     }
 
-    else if ( (object_id == HOUSE) || (object_id == HOUSE2)  || (object_id == HOUSE3)  || (object_id == HOUSE4))
-    {
-
-        Kdif = vec3(0.58, 0.4, 0.1);
-        Ks = vec3(1.0, 1.0, 0.0);
-        Ka = vec3(0.1,0.1,0.1);
-        q = 32.0;
-
-        float minx = bbox_min.x;
-        float maxx = bbox_max.x;
-
-        float miny = bbox_min.y;
-        float maxy = bbox_max.y;
-
-        float minz = bbox_min.z;
-        float maxz = bbox_max.z;
-
-        U = (position_model.x - minx)/(maxx - minx);
-        V = (position_model.y - miny)/(maxy - miny);
-    }
     else if ( object_id == COW )
     {
 
@@ -219,17 +188,12 @@ void main()
     }
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    vec3 Kd0 = texture(TextureImage6, vec2(U,V)).rgb;
-    vec3 Kd1 = texture(TextureImage1, vec2(U,V)).rgb;
-    vec3 Kd2 = texture(TextureImage2, vec2(U,V)).rgb;
-    vec3 Kd3 = texture(TextureImage3, vec2(U,V)).rgb;
-    vec3 Kd4 = texture(TextureImage4, vec2(U,V)).rgb;
-    vec3 Kd_vaca = texture(TextureImage5, vec2(U,V)).rgb;
-    vec3 Kd_casa = texture(TextureImage7,vec2(U,V)).rgb;
-    vec3 Kd_casa2 = texture(TextureImage8,vec2(U,V)).rgb;
-    vec3 Kd_casa3 = texture(TextureImage9,vec2(U,V)).rgb;
-    vec3 Kd_casa4 = texture(TextureImage10,vec2(U,V)).rgb;
-    vec3 Kd_gameover = texture(TextureImage11, vec2(U,V)).rgb;
+    vec3 Kd_sphere = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd_plane = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 Kd_fence = texture(TextureImage3, vec2(U,V)).rgb;
+    vec3 Kd_cow = texture(TextureImage4, vec2(U,V)).rgb;
+    vec3 Kd_bunny = texture(TextureImage5, vec2(U,V)).rgb;
+    vec3 Kd_gameover = texture(TextureImage6, vec2(U,V)).rgb;
 
     // Equação de Iluminação
 
@@ -256,45 +220,28 @@ void main()
 
     if ( object_id == SPHERE )
     {
-     color = (Kd3 * (lambert + 0.01)) /*+ (Kd1 * (1-lambert))*/;
+     color = (Kd_sphere * (lambert + 0.01));
     }
     else if (object_id == BUNNY)
     {
-    color = (Kd0 * (lambert + 0.01))+ phong_specular_term;
+    color = (Kd_bunny * (lambert + 0.01))+ phong_specular_term;
     }
     else if (object_id == PLANE)
     {
-    color = (Kd2 * (lambert + 0.01));
+    color = (Kd_plane * (lambert + 0.01));
     }
     else if (object_id == COW)
     {
-    color = (Kd_vaca * (lambert + 0.01));
+    color = (Kd_cow * (lambert + 0.01));
     }
     else if (object_id == FENCE)
     {
-    color = (Kd4 * (lambert + 0.5));
-    }
-    else if (object_id == HOUSE)
-    {
-    color = (Kd_casa * (lambert - 0.185));
-    }
-    else if (object_id == HOUSE2)
-    {
-    color = (Kd_casa2 * (lambert - 0.2));
-    }
-    else if (object_id == HOUSE3)
-    {
-    color = (Kd_casa3 * (lambert - 0.2));
-    }
-    else if (object_id == HOUSE4)
-    {
-    color = (Kd_casa4 * (lambert + 0.2));
+    color = (Kd_fence * (lambert + 0.5));
     }
     else if (object_id == GAMEOVER)
     {
     color = (Kd_gameover * (lambert + 0.2));
     }
-
 
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
