@@ -530,15 +530,11 @@ int main(int argc, char* argv[])
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
     LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
-    LoadTextureImage("../../data/grass.jpg"); //TextureImage2
+    LoadTextureImage("../../data/moon.jpg"); //TextureImage2
     LoadTextureImage("../../data/stars.png");//TextureImage3
     LoadTextureImage("../../data/woodtex.jpg");//TextureImage4
     LoadTextureImage("../../data/cow.jpg");//TextureImage5
     LoadTextureImage("../../data/golden.jpg");//TextureImage6
-    LoadTextureImage("../../data/house1.jpg");//TextureImage7
-    LoadTextureImage("../../data/house2.jpg");//TextureImage8
-    LoadTextureImage("../../data/house3.jpg");//TextureImage9
-    LoadTextureImage("../../data/house4.jpg");//TextureImage10
     LoadTextureImage("../../data/gameover.png");//TextureImage11
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
@@ -561,11 +557,6 @@ int main(int argc, char* argv[])
     ObjModel fencemodel("../../data/fence.obj");
     ComputeNormals(&fencemodel);
     BuildTrianglesAndAddToVirtualScene(&fencemodel);
-
-    ObjModel housemodel("../../data/house.obj");
-    ComputeNormals(&housemodel);
-    BuildTrianglesAndAddToVirtualScene(&housemodel);
-
 
 
     if ( argc > 1 )
@@ -691,10 +682,6 @@ int main(int argc, char* argv[])
         #define PLANE  2
         #define COW 3
         #define FENCE 4
-        #define HOUSE 5
-        #define HOUSE2 6
-        #define HOUSE3 7
-        #define HOUSE4 8
         #define GAMEOVER 9
 
         // Desenhamos o modelo da esfera
@@ -714,32 +701,6 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
-        // Desenhamos o modelo das CASAS
-        model = Matrix_Translate(-5.0f,-1.0f,-20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(-5.0f,-1.0f,20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f)
-              * Matrix_Rotate_Y(0.5f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE2);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(15.0f,-1.0f,-20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f)
-              * Matrix_Rotate_Y(0.8f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE3);
-        DrawVirtualObject("house");
-
-        model = Matrix_Translate(15.0f,-1.0f,20.0f)
-              * Matrix_Scale(5.0f,5.0f,5.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HOUSE4);
-        DrawVirtualObject("house");
         // Desenhamos o plano do chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
                 * Matrix_Scale (50.0f,50.0f,50.0f);
