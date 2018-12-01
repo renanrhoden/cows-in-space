@@ -523,14 +523,11 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
-    LoadTextureImage("../../data/moon.jpg"); //TextureImage2
-    LoadTextureImage("../../data/stars.png");//TextureImage3
-    LoadTextureImage("../../data/background.jpg");//TextureImage4
-    LoadTextureImage("../../data/cow.jpg");//TextureImage5
-    LoadTextureImage("../../data/golden.jpg");//TextureImage6
-    LoadTextureImage("../../data/gameover.png");//TextureImage11
+    LoadTextureImage("../../data/moon.jpg"); //TextureImage0
+    LoadTextureImage("../../data/stars.png");//TextureImage1
+    LoadTextureImage("../../data/cow.jpg");//TextureImage2
+    LoadTextureImage("../../data/bunny.jpg");//TextureImage3
+    LoadTextureImage("../../data/gameover.png");//TextureImage4
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -995,13 +992,6 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage8"), 8);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage9"), 9);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage10"), 10);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage11"), 11);
     glUseProgram(0);
 }
 

@@ -23,7 +23,7 @@ uniform mat4 projection;
 #define BUNNY  1
 #define PLANE  2
 #define COW 3
-#define GAMEOVER 9
+#define GAMEOVER 4
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -127,12 +127,10 @@ void main()
 
         // PREENCHA AQUI
         // Propriedades espectrais do coelho
-        Kdif = vec3(0.58, 0.4, 0.1);
-        Ks = vec3(4.0, 4.0, 0.0);
-        Ka = vec3(0.1,0.1,0.1);
-        q = 32.0;
-
-
+        Kdif = vec3(1.0, 1.0, 1.0);
+        Ks = vec3(1.0, 1.0, 0.0);
+        Ka = vec3(1.0,1.0,1.0);
+        q = 40.0;
 
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
@@ -142,8 +140,6 @@ void main()
 
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
-
-
 
         U = (position_model.x - minx)/(maxx - minx);
         V = (position_model.y - miny)/(maxy - miny);
@@ -179,13 +175,11 @@ void main()
     }
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    vec3 Kd0 = texture(TextureImage6, vec2(U,V)).rgb;
-    vec3 Kd1 = texture(TextureImage1, vec2(U,V)).rgb;
-    vec3 Kd2 = texture(TextureImage2, vec2(U,V)).rgb;
-    vec3 Kd3 = texture(TextureImage3, vec2(U,V)).rgb;
-    vec3 Kd4 = texture(TextureImage4, vec2(U,V)).rgb;
-    vec3 Kd_vaca = texture(TextureImage5, vec2(U,V)).rgb;
-    vec3 Kd_gameover = texture(TextureImage11, vec2(U,V)).rgb;
+    vec3 Kd_plane = texture(TextureImage0, vec2(U,V)).rgb;
+    vec3 Kd_star = texture(TextureImage1, vec2(U,V)).rgb;
+    vec3 Kd_cow = texture(TextureImage2, vec2(U,V)).rgb;
+    vec3 Kd_bunny = texture(TextureImage3, vec2(U,V)).rgb;
+    vec3 Kd_gameover = texture(TextureImage4, vec2(U,V)).rgb;
 
     // Equação de Iluminação
 
@@ -193,7 +187,7 @@ void main()
     vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
 
     // Espectro da luz ambiente
-    vec3 Ia = vec3(0.1,0.1,0.0); // PREENCHA AQUI o espectro da luz ambiente
+    vec3 Ia = vec3(1.0,1.0,1.0); // PREENCHA AQUI o espectro da luz ambiente
 
     // Termo difuso utilizando a lei dos cossenos de Lambert
     vec3 lambert_diffuse_term = Kdif*I*max(0,dot(n,l)); // PREENCHA AQUI o termo difuso de Lambert
@@ -212,19 +206,19 @@ void main()
 
     if ( object_id == SPHERE )
     {
-     color = (Kd3);
+     color = (Kd_star);
     }
     else if (object_id == BUNNY)
     {
-    color = (Kd0 * (lambert + 0.01))+ phong_specular_term;
+    color = (Kd_bunny * (lambert + 0.01))+ phong_specular_term;
     }
     else if (object_id == PLANE)
     {
-    color = (Kd2 * (lambert + 0.01));
+    color = (Kd_plane * (lambert + 0.01));
     }
     else if (object_id == COW)
     {
-    color = (Kd_vaca * (lambert + 0.01));
+    color = (Kd_cow * (lambert_diffuse_term + 0.01))+ phong_specular_term;
     }
     else if (object_id == GAMEOVER)
     {
