@@ -228,7 +228,7 @@ void main()
 
     if ( object_id == SPHERE )
     {
-     color = (Kd3 * (lambert + 0.01)) /*+ (Kd1 * (1-lambert))*/;
+     color = (Kd3);
     }
     else if (object_id == BUNNY)
     {
