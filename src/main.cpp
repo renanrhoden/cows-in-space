@@ -9,7 +9,7 @@
 //
 //                    Cows in Space
 //
-//          Grupo: Gabriel Martins e Ricardo Belo
+//          Grupo: Gabriel Martins e Renan Rhonden
 //
 //
 
@@ -346,10 +346,7 @@ bool hitcoelho (float x, float z)
         return true;
     }
     else return false;
-
-
-uniform vec4 bbox_min;
-uniform vec4 bbox_max;
+}
 
 bool hitvaca (float x, float z)
 {
