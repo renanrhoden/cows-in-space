@@ -38,8 +38,6 @@
 #include <windows.h>
 #include <time.h>
 
-//#include <mmsystem.h>
-
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>   // Criação de contexto OpenGL 3.3
 #include <GLFW/glfw3.h>  // Criação de janelas do sistema operacional
@@ -86,11 +84,12 @@ float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
 float vaca_z_5 = 1.5f;
 int nivel = 1;
-int life = 5;
+int life = 1;
 int picked_bunnies = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
 long start_time, end_time, elapsed;
+int one_time = 1;
 
 
 
@@ -284,24 +283,26 @@ int walk_flag = 0;
 #define up_value 0.005f;
 void walkeffect()
 {
-    if(up==1)
-    {
-        g_CameraY += up_value;
-        walk_flag++;
-        if(walk_flag > step_number)
+    if(!gameover){
+        if(up==1)
         {
-            walk_flag = 0;
-            up = 0;
+            g_CameraY += up_value;
+            walk_flag++;
+            if(walk_flag > step_number)
+            {
+                walk_flag = 0;
+                up = 0;
+            }
         }
-    }
-    else
-    {
-        g_CameraY += -up_value;
-        walk_flag++;
-        if(walk_flag > step_number)
+        else
         {
-            walk_flag = 0;
-            up = 1;
+            g_CameraY += -up_value;
+            walk_flag++;
+            if(walk_flag > step_number)
+            {
+                walk_flag = 0;
+                up = 1;
+            }
         }
     }
 
@@ -621,9 +622,9 @@ int main(int argc, char* argv[])
 
         if (!g_FreeCamera)
 		{
-            g_CameraX = x;
-            g_CameraY = y;
-            g_CameraZ = z;
+            g_CameraX = 400.0;
+            g_CameraY = g_CameraY;
+            g_CameraZ = 400.0f;
 		}
 
         //glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
@@ -679,8 +680,7 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
         #define COW 3
-        #define LAVA 4
-        #define GAMEOVER 9
+        #define GAMEOVER 4
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -766,26 +766,11 @@ int main(int argc, char* argv[])
             aumenta_nivel();
         }
 
-        if ((glfwGetTime()) > 5 && (glfwGetTime()) < 300){
-            //PlaySound(TEXT("../../data/bgm.wav"), NULL, SND_ASYNC | SND_LOOP);
-            glfwSetTime(500);
-        }
-
         if(vaca_x_1>volta_vaca){
             vaca_x_1 = vaca_inicial;
         }
         if(vaca_x_2>volta_vaca){
             vaca_x_2 = vaca_inicial;
-            if(picked_bunnies == easter){
-                picked_bunnies = 0;
-                vaca_x_5 = -60;
-                if(!gameover)
-                {
-                //    PlaySound(TEXT("../../data/moo2.wav"), NULL, SND_ASYNC);
-                    glfwSetTime(0);
-                }
-
-            }
         }
         if(vaca_x_3>volta_vaca){
             vaca_x_3 = vaca_inicial;
@@ -827,24 +812,23 @@ int main(int argc, char* argv[])
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
         glfwPollEvents();
-        if (gameover == false)
-        {
-        free_view_control(0.05f);
+        if (gameover == false) {
+            free_view_control(0.05f);
         }
-        else
-        {
-        if (life > 0)
-        {
+        else {
+            if (life > 0) {
             move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
             gameover = false;
             g_CameraPhi = 0.0f;
             g_CameraTheta = 0.0f;
-        }
-        else
-        {
-            g_CameraPhi = 0.0f;
-            g_CameraTheta = 0.0f;
+        } else {
+            if (one_time){
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
+            }
+            one_time = 0;
             move_player(400.0f,g_CameraY,400.0f);
+            g_FreeCamera = false;
         }
     }
 }

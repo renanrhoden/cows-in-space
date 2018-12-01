@@ -36,14 +36,6 @@ uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
-uniform sampler2D TextureImage5;
-uniform sampler2D TextureImage6;
-uniform sampler2D TextureImage7;
-uniform sampler2D TextureImage8;
-uniform sampler2D TextureImage9;
-uniform sampler2D TextureImage10;
-uniform sampler2D TextureImage11;
-
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
