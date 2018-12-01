@@ -36,6 +36,8 @@
 #include <stdexcept>
 #include <algorithm>
 #include <windows.h>
+#include <time.h>
+
 //#include <mmsystem.h>
 
 // Headers das bibliotecas OpenGL
@@ -87,6 +89,9 @@ int nivel = 1;
 int life = 5;
 int picked_bunnies = 0;
 bool gameover = false;
+int ultimo_segundo = 0;
+long start_time, end_time, elapsed;
+
 
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
@@ -455,6 +460,8 @@ int main(int argc, char* argv[])
     // Inicializamos a biblioteca GLFW, utilizada para criar uma janela do
     // sistema operacional, onde poderemos renderizar com OpenGL.
     int success = glfwInit();
+    start_time = clock();
+
     if (!success)
     {
         fprintf(stderr, "ERROR: glfwInit() failed.\n");
@@ -777,11 +784,15 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
-        // velocidade da vaca
-        vaca_x_1+= vaca_vel_1;
-        vaca_x_2+= vaca_vel_2;
-        vaca_x_3+= vaca_vel_3;
-        vaca_x_4+= vaca_vel_4;
+        end_time = clock();
+
+        // velocidade da vacaclc
+        vaca_x_1+= vaca_vel_1 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
+        vaca_x_2+= vaca_vel_2 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
+        vaca_x_3+= vaca_vel_3 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
+        vaca_x_4+= vaca_vel_4 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
+
+        start_time = end_time;
 
         if (hitvaca(g_CameraX,g_CameraZ))
         {
