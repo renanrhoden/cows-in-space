@@ -829,10 +829,10 @@ int main(int argc, char* argv[])
         glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, 4.0f);
         glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, 4.0f);
         glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HEART);
-        DrawVirtualObject("heart");
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
         end_time = clock();
 
         // velocidade da vacaclc
