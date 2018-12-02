@@ -10,6 +10,7 @@ layout (location = 2) in vec2 texture_coefficients;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec4 light_position;
 
 // Atributos de vértice que serão gerados como saída ("out") pelo Vertex Shader.
 // ** Estes serão interpolados pelo rasterizador! ** gerando, assim, valores
@@ -19,6 +20,7 @@ out vec4 position_world;
 out vec4 position_model;
 out vec4 normal;
 out vec2 texcoords;
+out vec3 cor_ball_gourad;
 
 void main()
 {
@@ -60,4 +62,31 @@ void main()
 
     // Coordenadas de textura obtidas do arquivo OBJ (se existirem!)
     texcoords = texture_coefficients;
+
+    	// Obtemos a posição da câera utilizando a inversa da matriz que define o
+    // sistema de coordenadas da câera.
+    vec4 origin = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 camera_pos = inverse(view) * origin;
+
+    vec4 l = normalize(vec4(4.5,7.0,0.0,0.0) - position_world);
+	vec4 n = normalize(normal);
+    vec4 v = normalize(camera_pos - position_world);
+    vec4 r = -l + 2 * n * (dot(l, v));
+	float lambert = max(0,dot(n,l));
+
+	vec3 Kd = vec3(0.08,0.0,0.0);
+	vec3 Ks = vec3(0.8,0.8,0.8);
+    vec3 Ka = vec3(0.04,0.2,0.4);
+    float q = 20.0;
+
+    vec3 I = vec3(1.0,1.0,1.0); // Espectro da fonte de iluminação
+    vec3 Ia = vec3(0.2,0.2,0.2); // Espectro da luz ambiente
+    vec3 lambert_diffuse_term = Kd * I * lambert;
+	vec3 ambient_term = Ka * Ia;
+
+	// Termo especular utilizando o modelo de iluminação de Blinn-Phong
+    vec4 h = normalize(v + l);
+    vec3 phong_specular_term  = Ks * I * pow(max(0, dot(n, h)), q);
+
+  	cor_ball_gourad = lambert_diffuse_term + ambient_term + phong_specular_term;
 }

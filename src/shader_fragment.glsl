@@ -13,10 +13,13 @@ in vec4 position_model;
 // Coordenadas de textura obtidas do arquivo OBJ (se existirem!)
 in vec2 texcoords;
 
+in vec3 cor_ball_gourad;
+
 // Matrizes computadas no código C++ e enviadas para a GPU
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
 
 // Identificador que define qual objeto está sendo desenhado no momento
 #define SPHERE 0
@@ -192,7 +195,7 @@ void main()
     vec3 Kd_bunny = texture(TextureImage3, vec2(U,V)).rgb;
     vec3 Kd_gameover = texture(TextureImage4, vec2(U,V)).rgb;
     vec3 Kd_heart = texture(TextureImage5, vec2(U,V)).rgb;
-    vec3 Kd_ball = texture(TextureImage3, vec2(U,V)).rgb;
+    //vec3 Kd_ball = texture(TextureImage3, vec2(U,V)).rgb;
 
     // Equação de Iluminação
 
@@ -243,7 +246,7 @@ void main()
     }
     else if (object_id == BALL)
     {
-    color = (Kd_ball* (lambert_diffuse_term + 0.01))+ phong_specular_term;
+    color = cor_ball_gourad;
     }
 
     // Cor final com correção gamma, considerando monitor sRGB.
