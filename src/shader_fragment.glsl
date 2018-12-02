@@ -25,6 +25,7 @@ uniform mat4 projection;
 #define COW 3
 #define GAMEOVER 4
 #define HEART 5
+#define BALL 6
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -191,6 +192,7 @@ void main()
     vec3 Kd_bunny = texture(TextureImage3, vec2(U,V)).rgb;
     vec3 Kd_gameover = texture(TextureImage4, vec2(U,V)).rgb;
     vec3 Kd_heart = texture(TextureImage5, vec2(U,V)).rgb;
+    vec3 Kd_ball = texture(TextureImage3, vec2(U,V)).rgb;
 
     // Equação de Iluminação
 
@@ -238,6 +240,10 @@ void main()
     else if (object_id == HEART)
     {
     color = (Kd_heart* (lambert_diffuse_term + 0.01))+ phong_specular_term;
+    }
+    else if (object_id == BALL)
+    {
+    color = (Kd_ball* (lambert_diffuse_term + 0.01))+ phong_specular_term;
     }
 
     // Cor final com correção gamma, considerando monitor sRGB.

@@ -377,7 +377,7 @@ void print_coord()
     // Printa coordenadas da camera no console
     std::cout << "X: " << g_CameraX << "\n";
     std::cout << "Y: " << g_CameraY << "\n";
-    std::cout << "Z: " << g_CameraZ << "\n-----------------\n";
+    std::cout << "Z: " << g_CameraZ << "\n---------------\n";
 }
 
 void aumenta_nivel()
@@ -758,6 +758,7 @@ int main(int argc, char* argv[])
         #define COW 3
         #define GAMEOVER 4
         #define HEART 5
+        #define BALL 6
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -829,14 +830,15 @@ int main(int argc, char* argv[])
         DrawVirtualObject("heart");
         */
 
-        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, 4.0f);
-        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, 4.0f);
-        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, 4.0f);
+        // Bézier
+        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -8.0f);
+        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
+        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
         glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(1.0f,1.0f,1.0f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HEART);
-        DrawVirtualObject("heart");
+        glUniform1i(object_id_uniform, BALL);
+        DrawVirtualObject("sphere");
         end_time = clock();
 
         // velocidade da vacaclc
