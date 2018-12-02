@@ -37,7 +37,7 @@
 #include <algorithm>
 #include <windows.h>
 #include <time.h>
-//#include <mmsystem.h>
+#include <mmsystem.h>
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>   // Criação de contexto OpenGL 3.3
@@ -100,15 +100,15 @@ float gameover_z = 3.0f;
 #define move_cows 10.0f
 
 
-#define IDA 0
-#define VOLTA 1
+#define going 0
+#define going_back 1
 
 float t = 0;
-float sentido = IDA;
-float move_coelho = true;
+float sentido = going;
+float move_ball = true;
 int movement_start_time = 0;
 
-//metodo que implementa a funçao parametrica de uma curva de bezier de grau 2
+// Metodo para a funçao parametrica de uma curva de bezier de grau 2
 glm::vec3 bezier(float t, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4){
 
     float one_minus_t = 1 - t;
@@ -122,30 +122,30 @@ glm::vec3 bezier(float t, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4
     return ((pow_three_one_t * p1) + (three_t * pow_two_one_t * p2) + (three_pow_two_t * one_minus_t * p3) + pow_three_t * p4);
 }
 
-//metodo que interpola o movimento ao longa de uma curva de bezier
-glm::vec3 move_ao_longo_bezier(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4){
+// Metodo que interpola o movimento ao longo de uma curva de bezier
+glm::vec3 move_bezier(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4){
     if (t == 0){
         movement_start_time = (int)glfwGetTime();
     }
-    if (sentido == IDA && move_coelho == true){
+    if (sentido == going && move_ball == true){
         if (t < 1) {
             if (((int)glfwGetTime() - movement_start_time) % 1 == 0)
                 t += 0.005f;
         }
         else {
-            sentido = VOLTA;
+            sentido = going_back;
             t = 1.0f;
             movement_start_time = (int)glfwGetTime();
         }
     } else {
-        if (sentido == VOLTA && move_coelho == true) {
+        if (sentido == going_back && move_ball == true) {
             if (t > 0) {
                 if (((int)glfwGetTime() - movement_start_time) % 1 == 0)
                     t -= 0.005f;
             }
             else {
                 t = 0.0f;
-                sentido = IDA;
+                sentido = going;
                 movement_start_time = (int)glfwGetTime();
             }
         }
@@ -257,7 +257,6 @@ std::stack<glm::mat4>  g_MatrixStack;
 // Razão de proporção da janela (largura/altura). Veja função FramebufferSizeCallback().
 float g_ScreenRatio = 1.0f;
 
-// Ângulos de Euler que controlam a rotação de um dos cubos da cena virtual
 float g_AngleX = 0.0f;
 float g_AngleY = 0.0f;
 float g_AngleZ = 0.0f;
@@ -282,11 +281,8 @@ float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 
-// Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
 float g_ForearmAngleX = 0.0f;
-
-// Variáveis que controlam translação do torso
 float g_TorsoPositionX = 0.0f;
 float g_TorsoPositionY = 0.0f;
 
@@ -662,7 +658,7 @@ int main(int argc, char* argv[])
     glm::mat4 the_view;
 
     // MUSIC - BGM
-    //PlaySound(TEXT("../../data/bgm.wav"), NULL, SND_ASYNC | SND_LOOP);
+    PlaySound(TEXT("../../data/bgm.wav"), NULL, SND_ASYNC | SND_LOOP);
 
     // Ficamos em loop, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
@@ -778,34 +774,24 @@ int main(int argc, char* argv[])
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
               * Matrix_Scale(50.50f,50.0f,50.0) * Matrix_Rotate_Y(180.0f);
-           /* * Matrix_Rotate_Z(0.6f)
-              * Matrix_Rotate_X(0.2f)
-              * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f) */;
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, SPHERE);
         DrawVirtualObject("sphere");
 
-        // Desenhamos o modelo do coelho
-        /*model = Matrix_Translate(5.0f,0.0f,-10.0f) * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BUNNY);
-        DrawVirtualObject("bunny");
-        */
-
-        // Modelo Heart
+        // Modelo heart
         model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, HEART);
         DrawVirtualObject("heart");
 
-        // Desenhamos o chão
+        // Desenhamos plano do chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
                 * Matrix_Scale (50.0f,50.0f,50.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
 
-        //PLANE GAME OVER
+        // Tela Game Over
         model = Matrix_Translate(400.0f,0.0f,396.0f)
                 * Matrix_Scale (gameover_x,gameover_y,gameover_z)
                 * Matrix_Rotate_X(-4.65f);
@@ -818,7 +804,7 @@ int main(int argc, char* argv[])
         glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -10.0f);
         glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -10.0f);
         glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -10.0f);
-        glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
+        glm::vec3 novo_ponto = move_bezier(p1, p2, p2, p3);
 
         // Ball
         model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(1.0f,1.0f,1.0f);
@@ -898,36 +884,9 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
-        // Heart
-        /*
-        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, HEART);
-        DrawVirtualObject("heart");
-        */
-/*
-        // Bézier
-         p1 = glm::vec3(1.5f, 0.0f, -8.0f);
-         p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
-         p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
-        novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(1.0f,1.0f,1.0f);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BALL);
-        DrawVirtualObject("sphere");
-
-        // Bézier
-        glm::vec3 v_p1 = glm::vec3(1.5f, 0.0f, 8.0f);
-        glm::vec3 v_p2 = glm::vec3(-0.5f, 7.0f, 8.0f);
-        glm::vec3 v_p3 = glm::vec3(-2.0f, 0.0f, 8.0f);
-        glm::vec3 v_novo_ponto = move_ao_longo_bezier(v_p1, v_p2, v_p2, v_p3);
-        model = Matrix_Translate(v_novo_ponto.x,v_novo_ponto.y,v_novo_ponto.z) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
-        DrawVirtualObject("cow"); */
         end_time = clock();
 
-        // velocidade da vacaclc
+        // Velocidade da vaca calculo
         vaca_x_1+= vaca_vel_1 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
         vaca_x_2+= vaca_vel_2 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
         vaca_x_3+= vaca_vel_3 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
