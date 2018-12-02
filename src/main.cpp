@@ -86,13 +86,17 @@ float vaca_z_2 = -1.5f;
 float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
 int nivel = 1;
-int life = 5;
+int life = 1;
 int picked_hearts = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
 long start_time, end_time, elapsed;
 int one_time = 1;
 bool invul = false;
+float gameover_x = 1.5f;
+float gameover_y = 1.5f;
+float gameover_z = 3.0f;
+#define model_multiplier 0.1f
 
 
 
@@ -534,11 +538,11 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/moon.jpg"); //TextureImage0
-    LoadTextureImage("../../data/stars.jpg");//TextureImage1
+    LoadTextureImage("../../data/grass.jpg"); //TextureImage0
+    LoadTextureImage("../../data/sky.jpg");//TextureImage1
     LoadTextureImage("../../data/cow.jpg");//TextureImage2
     LoadTextureImage("../../data/bunny.jpg");//TextureImage3
-    LoadTextureImage("../../data/gameover.png");//TextureImage4
+    LoadTextureImage("../../data/gameover.jpg");//TextureImage4
     LoadTextureImage("../../data/heart.jpg");//TextureImage5
 
 
@@ -731,7 +735,7 @@ int main(int argc, char* argv[])
 
         //PLANE GAME OVER
         model = Matrix_Translate(400.0f,0.0f,396.0f)
-                * Matrix_Scale (1.5f,1.5f,1.5f)
+                * Matrix_Scale (gameover_x,gameover_y,gameover_z)
                 * Matrix_Rotate_X(-4.65f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, GAMEOVER);
@@ -1609,7 +1613,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     }
 
     // Se o usuario apertar a tecla F, utilizamos a free camera
-	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	if (key == GLFW_KEY_F && action == GLFW_PRESS && !gameover)
 	{
 	    invul = false;
 		g_FreeCamera = true;
@@ -1619,7 +1623,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
 	}
 
     // Se o usuario apertar a tecla L, utilizamos a camera look-at
-	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	if (key == GLFW_KEY_L && action == GLFW_PRESS && !gameover)
 	{
 	    invul = true;
 		g_FreeCamera = false;
@@ -1631,6 +1635,22 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         LoadShadersFromFiles();
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
+    }
+
+    // Se o usuário apertar - no numpad diminui o tamanho do objeto gameover
+    if (key == GLFW_KEY_KP_SUBTRACT && action == GLFW_PRESS)
+    {
+        gameover_x-=model_multiplier;
+        gameover_y-=model_multiplier;
+        gameover_z-=model_multiplier;
+    }
+
+    // Se o usuário apertar + no numpad diminui o tamanho do objeto gameover
+    if (key == GLFW_KEY_KP_ADD && action == GLFW_PRESS)
+    {
+        gameover_x+=model_multiplier;
+        gameover_y+=model_multiplier;
+        gameover_z+=model_multiplier;
     }
 
     if (key == GLFW_KEY_A && action == GLFW_PRESS)

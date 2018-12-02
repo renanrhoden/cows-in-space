@@ -233,7 +233,7 @@ void main()
     }
     else if (object_id == GAMEOVER)
     {
-    color = (Kd_gameover * (lambert + 0.2));
+    color = (Kd_gameover);
     }
     else if (object_id == HEART)
     {
