@@ -24,10 +24,6 @@ uniform mat4 projection;
 #define PLANE  2
 #define COW 3
 #define FENCE 4
-#define HOUSE 5
-#define HOUSE2 6
-#define HOUSE3 7
-#define HOUSE4 8
 #define GAMEOVER 9
 uniform int object_id;
 
@@ -154,26 +150,6 @@ void main()
         V = (position_model.y - miny)/(maxy - miny);
     }
 
-    else if ( (object_id == HOUSE) || (object_id == HOUSE2)  || (object_id == HOUSE3)  || (object_id == HOUSE4))
-    {
-
-        Kdif = vec3(0.58, 0.4, 0.1);
-        Ks = vec3(1.0, 1.0, 0.0);
-        Ka = vec3(0.1,0.1,0.1);
-        q = 32.0;
-
-        float minx = bbox_min.x;
-        float maxx = bbox_max.x;
-
-        float miny = bbox_min.y;
-        float maxy = bbox_max.y;
-
-        float minz = bbox_min.z;
-        float maxz = bbox_max.z;
-
-        U = (position_model.x - minx)/(maxx - minx);
-        V = (position_model.y - miny)/(maxy - miny);
-    }
     else if ( object_id == COW )
     {
 
@@ -225,10 +201,6 @@ void main()
     vec3 Kd3 = texture(TextureImage3, vec2(U,V)).rgb;
     vec3 Kd4 = texture(TextureImage4, vec2(U,V)).rgb;
     vec3 Kd_vaca = texture(TextureImage5, vec2(U,V)).rgb;
-    vec3 Kd_casa = texture(TextureImage7,vec2(U,V)).rgb;
-    vec3 Kd_casa2 = texture(TextureImage8,vec2(U,V)).rgb;
-    vec3 Kd_casa3 = texture(TextureImage9,vec2(U,V)).rgb;
-    vec3 Kd_casa4 = texture(TextureImage10,vec2(U,V)).rgb;
     vec3 Kd_gameover = texture(TextureImage11, vec2(U,V)).rgb;
 
     // Equação de Iluminação
@@ -273,22 +245,6 @@ void main()
     else if (object_id == FENCE)
     {
     color = (Kd4 * (lambert + 0.5));
-    }
-    else if (object_id == HOUSE)
-    {
-    color = (Kd_casa * (lambert - 0.185));
-    }
-    else if (object_id == HOUSE2)
-    {
-    color = (Kd_casa2 * (lambert - 0.2));
-    }
-    else if (object_id == HOUSE3)
-    {
-    color = (Kd_casa3 * (lambert - 0.2));
-    }
-    else if (object_id == HOUSE4)
-    {
-    color = (Kd_casa4 * (lambert + 0.2));
     }
     else if (object_id == GAMEOVER)
     {
