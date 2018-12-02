@@ -396,7 +396,7 @@ bool isoutofbounds (float x,float z)
     //Bounds do mapa
     if (
         //Bounds do mapa
-        ((x<=-30)||(x>=30)||(z>=30)||(z<=-30))
+        ((x<=-40)||(x>=40)||(z>=40)||(z<=-40))
         )
     {
         return true;
@@ -463,59 +463,53 @@ void free_view_control(float step)
 
         if  (g_AKeyPressed)
         {
-            if (isoutofbounds(g_CameraX,g_CameraZ))
-            {
-                g_CameraX -= left.x*5*(-step);
-                g_CameraZ -= left.z*5*(-step);
+            if (isoutofbounds(g_CameraX,g_CameraZ)){
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
-            else
-            {
-                //mover para esquerda
+            else{
+                // Movimentação para esquerda
                 g_CameraX -= left.x*step;
                 g_CameraZ -= left.z*step;
             }
 		}
         if  (g_DKeyPressed)
         {
-            if (isoutofbounds(g_CameraX,g_CameraZ))
-            {
-                g_CameraX += left.x*5*(-step);
-                g_CameraZ += left.z*5*(-step);
+            if (isoutofbounds(g_CameraX,g_CameraZ)){
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
-            else
-            {
-                //mover para direita
+            else{
+                // Movimentação para direita
                 g_CameraX += left.x*step;
                 g_CameraZ += left.z*step;
             }
 		}
         if  (g_WKeyPressed)
         {
-            if (isoutofbounds(g_CameraX,g_CameraZ))
-            {
-                g_CameraX += viewD.x*5*(-step);
-                g_CameraZ += viewD.z*5*(-step);
+            if (isoutofbounds(g_CameraX,g_CameraZ)){
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
-            else
-            {
-                //mover para frente
+            else{
+                // Movimentação para frente
                 g_CameraX += viewD.x*step;
-                //g_CameraY += viewD.y*step;
                 g_CameraZ += viewD.z*step;
             }
 		}
         if  (g_SKeyPressed)
         {
-            if (isoutofbounds(g_CameraX,g_CameraZ))
-            {
-                g_CameraX -= viewD.x*5*(-step);
-                g_CameraZ -= viewD.z*5*(-step);
+            if (isoutofbounds(g_CameraX,g_CameraZ)){
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
-            else
-            {
-                //mover para tras
+            else{
+                // Movimentação para tras
                 g_CameraX -= viewD.x*step;
-                //g_CameraY -= viewD.y*step;
                 g_CameraZ -= viewD.z*step;
             }
 		}
