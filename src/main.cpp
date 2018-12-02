@@ -621,10 +621,10 @@ int main(int argc, char* argv[])
 //        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
 //        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
-        float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
+        /*float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
         float y = r*sin(g_CameraPhi);
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);*/
 
         if (!g_FreeCamera)
 		{
