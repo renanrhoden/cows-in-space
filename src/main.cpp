@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <windows.h>
 #include <time.h>
+//#include <mmsystem.h>
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>   // Criação de contexto OpenGL 3.3
@@ -824,6 +825,7 @@ int main(int argc, char* argv[])
         // usuário (teclado, mouse, ...). Caso positivo, as funções de callback
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
+
         glfwPollEvents();
         if (gameover == false) {
             free_view_control(0.05f);
