@@ -5,7 +5,7 @@
 //    INF01047 Fundamentos de Computação Gráfica
 //               Prof. Eduardo Gastal
 //
-//                   Trabalho Final
+//                       Projeto
 //
 //                    Dodge the Cows
 //
@@ -57,8 +57,7 @@
 #include "utils.h"
 #include "matrices.h"
 
-#define easter 6
-#define vel_nivel 0.01f
+#define vel_nivel 0.02f
 #define volta_vaca 30.0f
 #define vaca_inicial -20.0f
 #define vaca_y_1  0.7f
@@ -86,7 +85,8 @@ float vaca_z_2 = -1.5f;
 float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
 int nivel = 1;
-int life = 1;
+#define starting_life 5
+int life = starting_life;
 int picked_hearts = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
@@ -97,6 +97,7 @@ float gameover_x = 1.5f;
 float gameover_y = 1.5f;
 float gameover_z = 3.0f;
 #define model_multiplier 0.1f
+#define move_cows 10.0f
 
 
 #define IDA 0
@@ -314,7 +315,6 @@ void walkeffect(void);
 void print_coord(void);
 void aumenta_nivel(void);
 bool isoutofbounds (float x,float z);
-bool hitcoelho (float x, float z);
 bool hitvaca (float x, float z);
 bool hitheart (float x, float z);
 
@@ -323,7 +323,7 @@ GLuint g_NumLoadedTextures = 0;
 
 #define player_initial_pos_x 0.0f
 #define player_initial_pos_y 0.0f
-#define player_initial_pos_z 15.0f
+#define player_initial_pos_z 17.0f
 
 #define game_over_pos_x 0.0f
 #define game_over_pos_y 0.0f
@@ -390,12 +390,10 @@ void aumenta_nivel()
 
 }
 
-// Logica de Colisoes
+// Colisoes com limites do Mapa
 bool isoutofbounds (float x,float z)
 {
-    //Bounds do mapa
     if (
-        //Bounds do mapa
         ((x<=-40)||(x>=40)||(z>=40)||(z<=-40))
         )
     {
@@ -407,25 +405,14 @@ bool isoutofbounds (float x,float z)
     }
 }
 
-/*
-bool hitcoelho (float x, float z)
-{
-    if (//Bounds do Coelho
-        ((x>=3.80)&&(x<=3.9)&&(z<=-9.2)&&(z>=-10.63))
-        ||((x>=3.80)&&(x<=6.2)&&(z<=-9.2)&&(z>=-10.63)))
-    {
-        return true;
-    }
-    else return false;
-}
-*/
-
+// Colsiao com o heart
 bool hitheart (float x, float z){
     if (((x>=heart_x -0.5f) && (x<=heart_x+0.5f) && (z>=heart_z -0.2f) && (z<=heart_z+0.2f)))
         return true;
     else return false;
 }
 
+// Colisoes com as Vacas
 bool hitvaca (float x, float z)
 {
     if (
@@ -440,6 +427,30 @@ bool hitvaca (float x, float z)
         ||
         // Bounds da Vaca 4
         ( (x>=vaca_x_4-3.0f)&&(x<=vaca_x_4+2.5f)&&(z>=vaca_z_4-1.0f)&&(z<=vaca_z_4+1.0f))
+        ||
+        //Bounds da Vaca 6
+        ( (x>=vaca_x_2-1.0f)&&(x<=vaca_x_2+1.0f)&&(z>=vaca_z_2- move_cows -0.3f)&&(z<=vaca_z_2+0.3f - move_cows))
+        ||
+        //Bounds da Vaca 5
+        ( (x>=vaca_x_1-2.50f)&&(x<=vaca_x_1+2.0f)&&(z>=vaca_z_1- move_cows-0.8f)&&(z<=vaca_z_1- move_cows+0.8f))
+        ||
+        // Bounds da Vaca 7
+        ( (x>=vaca_x_3-1.75f)&&(x<=vaca_x_3+1.25f)&&(z>=vaca_z_3- move_cows-0.5f)&&(z<=vaca_z_3- move_cows+0.5f))
+        ||
+        // Bounds da Vaca 8
+        ( (x>=vaca_x_4-3.0f)&&(x<=vaca_x_4+2.5f)&&(z>=vaca_z_4- move_cows-1.0f)&&(z<=vaca_z_4- move_cows+1.0f))
+        ||
+        //Bounds da Vaca 10
+        ( (x>=vaca_x_2-1.0f)&&(x<=vaca_x_2+1.0f)&&(z>=vaca_z_2+ move_cows-0.3f)&&(z<=vaca_z_2+ move_cows+0.3f))
+        ||
+        //Bounds da Vaca 9
+        ( (x>=vaca_x_1-2.50f)&&(x<=vaca_x_1+2.0f)&&(z>=vaca_z_1+ move_cows-0.8f)&&(z<=vaca_z_1+ move_cows+0.8f))
+        ||
+        // Bounds da Vaca 11
+        ( (x>=vaca_x_3-1.75f)&&(x<=vaca_x_3+1.25f)&&(z>=vaca_z_3+ move_cows-0.5f)&&(z<=vaca_z_3+ move_cows+0.5f))
+        ||
+        // Bounds da Vaca 12
+        ( (x>=vaca_x_4-3.0f)&&(x<=vaca_x_4+2.5f)&&(z>=vaca_z_4+ move_cows-1.0f)&&(z<=vaca_z_4+ move_cows+1.0f))
         )
     {
         return true;
@@ -552,7 +563,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 1024 colunas e 768 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(1024, 768, "Cows in Space", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, "Dodge the Cows", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -804,11 +815,13 @@ int main(int argc, char* argv[])
 
 
         // Bézier
-        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -8.0f);
-        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
-        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
+        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -10.0f);
+        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -10.0f);
+        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -10.0f);
         glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,0.0,novo_ponto.y) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+
+        // Ball
+        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(1.0f,1.0f,1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BALL);
         DrawVirtualObject("sphere");
@@ -832,7 +845,55 @@ int main(int argc, char* argv[])
         DrawVirtualObject("cow");
 
         // Vaca 4
-        model = Matrix_Translate(vaca_x_4,vaca_y_4,novo_ponto.y) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
+        model = Matrix_Translate(vaca_x_4,vaca_y_4,vaca_y_4) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 5
+        model = Matrix_Translate(vaca_x_1,vaca_y_1,vaca_z_1 - move_cows) * Matrix_Scale(vaca_tam_1,vaca_tam_1,vaca_tam_1);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 6
+        model = Matrix_Translate(vaca_x_2,vaca_y_2,vaca_z_2 - move_cows) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 7
+        model = Matrix_Translate(vaca_x_3,vaca_y_3,vaca_z_3- move_cows) * Matrix_Scale(vaca_tam_3,vaca_tam_3,vaca_tam_3);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 8
+        model = Matrix_Translate(vaca_x_4,vaca_y_4,vaca_y_4 - move_cows) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 9
+        model = Matrix_Translate(vaca_x_1,vaca_y_1,vaca_z_1 + move_cows) * Matrix_Scale(vaca_tam_1,vaca_tam_1,vaca_tam_1);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 10
+        model = Matrix_Translate(vaca_x_2,vaca_y_2,vaca_z_2 + move_cows) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 11
+        model = Matrix_Translate(vaca_x_3,vaca_y_3,vaca_z_3+ move_cows) * Matrix_Scale(vaca_tam_3,vaca_tam_3,vaca_tam_3);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
+
+        // Vaca 12
+        model = Matrix_Translate(vaca_x_4,vaca_y_4,vaca_y_4 + move_cows) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
@@ -1673,16 +1734,21 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     }
 
 
-    // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+    // Se o usuário apertar a tecla espaço, resetamos o jogo quando estiver em Game Over
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS && gameover)
     {
-        g_AngleX = 0.0f;
-        g_AngleY = 0.0f;
-        g_AngleZ = 0.0f;
-        g_ForearmAngleX = 0.0f;
-        g_ForearmAngleZ = 0.0f;
-        g_TorsoPositionX = 0.0f;
-        g_TorsoPositionY = 0.0f;
+        nivel = 1;
+        vaca_vel_1 = 0.06f;
+        vaca_vel_2 = 0.12f;
+        vaca_vel_3 = 0.09f;
+        vaca_vel_4 = 0.03f;
+        life = starting_life;
+        gameover = false;
+        g_FreeCamera = true;
+        g_CameraPhi = 0.0f;
+        g_CameraTheta = 0.0f;
+		move_player(player_initial_pos_x, player_initial_pos_y, player_initial_pos_z);
+
     }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
