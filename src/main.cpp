@@ -529,6 +529,8 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/cow.jpg");//TextureImage2
     LoadTextureImage("../../data/bunny.jpg");//TextureImage3
     LoadTextureImage("../../data/gameover.png");//TextureImage4
+    LoadTextureImage("../../data/heart.jpg");//TextureImage5
+
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -546,6 +548,10 @@ int main(int argc, char* argv[])
     ObjModel cowmodel("../../data/cow.obj");
     ComputeNormals(&cowmodel);
     BuildTrianglesAndAddToVirtualScene(&cowmodel);
+
+    ObjModel heartmodel("../../data/heart.obj");
+    ComputeNormals(&heartmodel);
+    BuildTrianglesAndAddToVirtualScene(&heartmodel);
 
     if ( argc > 1 )
     {
@@ -681,6 +687,7 @@ int main(int argc, char* argv[])
         #define PLANE  2
         #define COW 3
         #define GAMEOVER 4
+        #define HEART 5
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -743,6 +750,12 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
+
+        // Heart
+        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, HEART);
+        DrawVirtualObject("heart");
 
         end_time = clock();
 
@@ -976,6 +989,7 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage2"), 2);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
+    glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
     glUseProgram(0);
 }
 

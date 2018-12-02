@@ -24,6 +24,7 @@ uniform mat4 projection;
 #define PLANE  2
 #define COW 3
 #define GAMEOVER 4
+#define HEART 5
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -36,6 +37,7 @@ uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
 uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage5;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec3 color;
@@ -166,12 +168,29 @@ void main()
         V = texcoords.y;
     }
 
+    else if ( object_id == HEART )
+    {
+
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx)/(maxx - minx);
+        V = (position_model.y - miny)/(maxy - miny);
+    }
+
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
     vec3 Kd_plane = texture(TextureImage0, vec2(U,V)).rgb;
     vec3 Kd_star = texture(TextureImage1, vec2(U,V)).rgb;
     vec3 Kd_cow = texture(TextureImage2, vec2(U,V)).rgb;
     vec3 Kd_bunny = texture(TextureImage3, vec2(U,V)).rgb;
     vec3 Kd_gameover = texture(TextureImage4, vec2(U,V)).rgb;
+    vec3 Kd_heart = texture(TextureImage5, vec2(U,V)).rgb;
 
     // Equação de Iluminação
 
@@ -215,6 +234,10 @@ void main()
     else if (object_id == GAMEOVER)
     {
     color = (Kd_gameover * (lambert + 0.2));
+    }
+    else if (object_id == HEART)
+    {
+    color = (Kd_heart* (lambert_diffuse_term + 0.01))+ phong_specular_term;
     }
 
     // Cor final com correção gamma, considerando monitor sRGB.
