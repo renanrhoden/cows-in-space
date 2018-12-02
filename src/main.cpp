@@ -99,6 +99,62 @@ float gameover_z = 3.0f;
 #define model_multiplier 0.1f
 
 
+#define IDA 0
+#define VOLTA 1
+
+float t = 0;
+float sentido = IDA;
+float move_coelho = true;
+int movement_start_time = 0;
+
+//metodo que implementa a funçao parametrica de uma curva de bezier de grau 2
+glm::vec3 bezier(float t, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4){
+
+    float one_minus_t = 1 - t;
+    float pow_two_one_t = pow(one_minus_t, 2);
+    float pow_three_one_t = pow(one_minus_t, 3);
+    float three_t = 3 * t;
+    float pow_two_t = pow(t, 2);
+    float pow_three_t = pow(t, 3);
+    float three_pow_two_t = 3 * pow_two_t;
+
+    return ((pow_three_one_t * p1) + (three_t * pow_two_one_t * p2) + (three_pow_two_t * one_minus_t * p3) + pow_three_t * p4);
+}
+
+//metodo que interpola o movimento ao longa de uma curva de bezier
+glm::vec3 move_ao_longo_bezier(glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 p4){
+    if (t == 0){
+        movement_start_time = (int)glfwGetTime();
+    }
+    if (sentido == IDA && move_coelho == true){
+        if (t < 1) {
+            if (((int)glfwGetTime() - movement_start_time) % 1 == 0)
+                t += 0.005f;
+        }
+        else {
+            sentido = VOLTA;
+            t = 1.0f;
+            movement_start_time = (int)glfwGetTime();
+        }
+    } else {
+        if (sentido == VOLTA && move_coelho == true) {
+            if (t > 0) {
+                if (((int)glfwGetTime() - movement_start_time) % 1 == 0)
+                    t -= 0.005f;
+            }
+            else {
+                t = 0.0f;
+                sentido = IDA;
+                movement_start_time = (int)glfwGetTime();
+            }
+        }
+    }
+    return bezier(t,p1,p2,p3,p4);
+
+}
+
+
+
 
 // Estrutura que representa um modelo geométrico carregado a partir de um
 // arquivo ".obj". Veja https://en.wikipedia.org/wiki/Wavefront_.obj_file .
@@ -773,6 +829,14 @@ int main(int argc, char* argv[])
         DrawVirtualObject("heart");
         */
 
+        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, 4.0f);
+        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, 4.0f);
+        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, 4.0f);
+        glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
+        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, HEART);
+        DrawVirtualObject("heart");
         end_time = clock();
 
         // velocidade da vacaclc
