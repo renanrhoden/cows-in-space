@@ -7,7 +7,7 @@
 //
 //                   Trabalho Final
 //
-//                    Cows in Space
+//                    Dodge the Cows
 //
 //          Grupo: Gabriel Martins e Renan Rhoden
 //
@@ -334,9 +334,9 @@ float g_CameraX = player_initial_pos_x, g_CameraY = player_initial_pos_y, g_Came
 
 void move_player(float pos_X, float pos_Y, float pos_Z)
 {
-    g_CameraX = pos_X * (end_time - start_time) / CLOCKS_PER_SEC ;
-    g_CameraY = pos_Y * (end_time - start_time) / CLOCKS_PER_SEC;
-    g_CameraZ = pos_Z * (end_time - start_time) / CLOCKS_PER_SEC;
+    g_CameraX = pos_X;
+    g_CameraY = pos_Y;
+    g_CameraZ = pos_Z;
 
 }
 

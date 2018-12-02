@@ -1,4 +1,4 @@
-Para compilar (Code Blocks):
+﻿Para compilar utilizando o Code Blocks:
 
-- Adicionar "winmm" as libraries (Settings -> Compiler -> Linker Settings-> add -> winmm)
-- Dar rebuild (CTRL + F11)
+Primeiro, adicionar a "winmm" nas libraries (Settings -> Compiler -> Linker Settings-> add -> winmm).
+Se necessário fazer um rebuild (CTRL + F11).
