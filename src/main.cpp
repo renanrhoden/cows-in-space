@@ -396,7 +396,7 @@ bool isoutofbounds (float x,float z)
     //Bounds do mapa
     if (
         //Bounds do mapa
-        ((x<=-30)||(x>=30)||(z>=30)||(z<=-30))
+        ((x<=-40)||(x>=40)||(z>=40)||(z<=-40))
         )
     {
         return true;
@@ -407,9 +407,10 @@ bool isoutofbounds (float x,float z)
     }
 }
 
+/*
 bool hitcoelho (float x, float z)
 {
-    if (        //Bounds do Coelho
+    if (//Bounds do Coelho
         ((x>=3.80)&&(x<=3.9)&&(z<=-9.2)&&(z>=-10.63))
         ||((x>=3.80)&&(x<=6.2)&&(z<=-9.2)&&(z>=-10.63)))
     {
@@ -417,6 +418,7 @@ bool hitcoelho (float x, float z)
     }
     else return false;
 }
+*/
 
 bool hitheart (float x, float z){
     if (((x>=heart_x -0.5f) && (x<=heart_x+0.5f) && (z>=heart_z -0.2f) && (z<=heart_z+0.2f)))
@@ -465,12 +467,13 @@ void free_view_control(float step)
         {
             if (isoutofbounds(g_CameraX,g_CameraZ))
             {
-                g_CameraX -= left.x*5*(-step);
-                g_CameraZ -= left.z*5*(-step);
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
             else
             {
-                //mover para esquerda
+                //Movimentação para esquerda
                 g_CameraX -= left.x*step;
                 g_CameraZ -= left.z*step;
             }
@@ -479,12 +482,13 @@ void free_view_control(float step)
         {
             if (isoutofbounds(g_CameraX,g_CameraZ))
             {
-                g_CameraX += left.x*5*(-step);
-                g_CameraZ += left.z*5*(-step);
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
             else
             {
-                //mover para direita
+                //Movimentação para direita
                 g_CameraX += left.x*step;
                 g_CameraZ += left.z*step;
             }
@@ -493,14 +497,14 @@ void free_view_control(float step)
         {
             if (isoutofbounds(g_CameraX,g_CameraZ))
             {
-                g_CameraX += viewD.x*5*(-step);
-                g_CameraZ += viewD.z*5*(-step);
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
             else
             {
-                //mover para frente
+                //Movimentação para frente
                 g_CameraX += viewD.x*step;
-                //g_CameraY += viewD.y*step;
                 g_CameraZ += viewD.z*step;
             }
 		}
@@ -508,14 +512,14 @@ void free_view_control(float step)
         {
             if (isoutofbounds(g_CameraX,g_CameraZ))
             {
-                g_CameraX -= viewD.x*5*(-step);
-                g_CameraZ -= viewD.z*5*(-step);
+                move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
             }
             else
             {
-                //mover para tras
+                //Movimentação para tras
                 g_CameraX -= viewD.x*step;
-                //g_CameraY -= viewD.y*step;
                 g_CameraZ -= viewD.z*step;
             }
 		}
@@ -835,10 +839,20 @@ int main(int argc, char* argv[])
         glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
         glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
         glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(1.0f,1.0f,1.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BALL);
         DrawVirtualObject("sphere");
+
+        // Bézier
+        glm::vec3 v_p1 = glm::vec3(1.5f, 0.0f, 8.0f);
+        glm::vec3 v_p2 = glm::vec3(-0.5f, 7.0f, 8.0f);
+        glm::vec3 v_p3 = glm::vec3(-2.0f, 0.0f, 8.0f);
+        glm::vec3 v_novo_ponto = move_ao_longo_bezier(v_p1, v_p2, v_p2, v_p3);
+        model = Matrix_Translate(v_novo_ponto.x,v_novo_ponto.y,v_novo_ponto.z) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, COW);
+        DrawVirtualObject("cow");
         end_time = clock();
 
         // velocidade da vacaclc
