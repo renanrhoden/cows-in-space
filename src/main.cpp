@@ -84,7 +84,7 @@ float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
 float vaca_z_5 = 1.5f;
 int nivel = 1;
-int life = 1;
+int life = 5;
 int picked_bunnies = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
@@ -525,7 +525,7 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/moon.jpg"); //TextureImage0
-    LoadTextureImage("../../data/stars.png");//TextureImage1
+    LoadTextureImage("../../data/stars.jpg");//TextureImage1
     LoadTextureImage("../../data/cow.jpg");//TextureImage2
     LoadTextureImage("../../data/bunny.jpg");//TextureImage3
     LoadTextureImage("../../data/gameover.png");//TextureImage4
@@ -621,16 +621,16 @@ int main(int argc, char* argv[])
 //        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
 //        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
-        /*float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
+        float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
         float y = r*sin(g_CameraPhi);
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);*/
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
         if (!g_FreeCamera)
 		{
-            g_CameraX = 400.0;
-            g_CameraY = g_CameraY;
-            g_CameraZ = 400.0f;
+            g_CameraX = x;
+            g_CameraY = y;
+            g_CameraZ = z;
 		}
 
         //glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
@@ -691,7 +691,7 @@ int main(int argc, char* argv[])
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
-              * Matrix_Scale(50.50f,50.0f,50.0)
+              * Matrix_Scale(50.50f,50.0f,50.0) * Matrix_Rotate_Y(180.0f);
            /* * Matrix_Rotate_Z(0.6f)
               * Matrix_Rotate_X(0.2f)
               * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f) */;
@@ -752,7 +752,7 @@ int main(int argc, char* argv[])
         DrawVirtualObject("cow");
 
         // Heart
-        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        model = Matrix_Translate(5.0f,-0.5f,5.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, HEART);
         DrawVirtualObject("heart");
@@ -838,10 +838,10 @@ int main(int argc, char* argv[])
             if (one_time){
                 g_CameraPhi = 0.0f;
                 g_CameraTheta = 0.0f;
+                move_player(400.0f,g_CameraY,400.0f);
             }
             one_time = 0;
-            move_player(400.0f,g_CameraY,400.0f);
-            g_FreeCamera = false;
+            //g_FreeCamera = false;
         }
     }
 }
@@ -1599,6 +1599,9 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 	{
 		g_FreeCamera = true;
+        g_CameraPhi = 0.0f;
+        g_CameraTheta = 0.0f;
+		move_player(player_initial_pos_x, player_initial_pos_y, player_initial_pos_z);
 	}
 
     // Se o usuario apertar a tecla L, utilizamos a camera look-at

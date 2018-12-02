@@ -221,7 +221,7 @@ void main()
     }
     else if (object_id == BUNNY)
     {
-    color = (Kd_bunny * (lambert + 0.01))+ phong_specular_term;
+    color = (Kd_bunny * (lambert + 0.01));
     }
     else if (object_id == PLANE)
     {
@@ -229,7 +229,7 @@ void main()
     }
     else if (object_id == COW)
     {
-    color = (Kd_cow * (lambert_diffuse_term + 0.01))+ phong_specular_term;
+    color = (Kd_cow * (lambert_diffuse_term + 0.01));
     }
     else if (object_id == GAMEOVER)
     {
