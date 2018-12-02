@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <windows.h>
 #include <time.h>
+//#include <mmsystem.h>
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>   // Criação de contexto OpenGL 3.3
@@ -69,6 +70,9 @@
 #define vaca_tam_3 2.0f
 #define vaca_tam_4 4.0f
 #define vaca_tam_5 50.0f
+#define heart_x 0.0f
+#define heart_y -0.5f
+#define heart_z 0.0f
 float vaca_vel_1 = 0.06f;
 float vaca_vel_2 = 0.12f;
 float vaca_vel_3 = 0.09f;
@@ -77,19 +81,18 @@ float vaca_x_1 = vaca_inicial;
 float vaca_x_2 = vaca_inicial;
 float vaca_x_3 = vaca_inicial;
 float vaca_x_4 = vaca_inicial;
-float vaca_x_5 = -600.0f;
 float vaca_z_1 = 0.0f;
 float vaca_z_2 = -1.5f;
 float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
-float vaca_z_5 = 1.5f;
 int nivel = 1;
-int life = 1;
-int picked_bunnies = 0;
+int life = 5;
+int picked_hearts = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
 long start_time, end_time, elapsed;
 int one_time = 1;
+bool invul = false;
 
 
 
@@ -253,13 +256,14 @@ void aumenta_nivel(void);
 bool isoutofbounds (float x,float z);
 bool hitcoelho (float x, float z);
 bool hitvaca (float x, float z);
+bool hitheart (float x, float z);
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
 
-#define player_initial_pos_x 3.0f
+#define player_initial_pos_x 0.0f
 #define player_initial_pos_y 0.0f
-#define player_initial_pos_z 12.0f
+#define player_initial_pos_z 15.0f
 
 #define game_over_pos_x 0.0f
 #define game_over_pos_y 0.0f
@@ -351,6 +355,12 @@ bool hitcoelho (float x, float z)
     {
         return true;
     }
+    else return false;
+}
+
+bool hitheart (float x, float z){
+    if (((x>=heart_x -0.5f) && (x<=heart_x+0.5f) && (z>=heart_z -0.2f) && (z<=heart_z+0.2f)))
+        return true;
     else return false;
 }
 
@@ -525,7 +535,7 @@ int main(int argc, char* argv[])
 
     // Carregamos duas imagens para serem utilizadas como textura
     LoadTextureImage("../../data/moon.jpg"); //TextureImage0
-    LoadTextureImage("../../data/stars.png");//TextureImage1
+    LoadTextureImage("../../data/stars.jpg");//TextureImage1
     LoadTextureImage("../../data/cow.jpg");//TextureImage2
     LoadTextureImage("../../data/bunny.jpg");//TextureImage3
     LoadTextureImage("../../data/gameover.png");//TextureImage4
@@ -616,28 +626,28 @@ int main(int argc, char* argv[])
 
         // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         // Veja slides 165-175 do documento "Aula_08_Sistemas_de_Coordenadas.pdf".
-//        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-//        glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-//        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
-//        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        // glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+        // glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        // glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        // glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
-        /*float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
+        float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
         float y = r*sin(g_CameraPhi);
         float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);*/
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
         if (!g_FreeCamera)
 		{
-            g_CameraX = 400.0;
-            g_CameraY = g_CameraY;
-            g_CameraZ = 400.0f;
+            g_CameraX = x;
+            g_CameraY = y;
+            g_CameraZ = z;
 		}
 
         //glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f);
         glm::vec4 camera_position_c  = glm::vec4(g_CameraX,g_CameraY,g_CameraZ,1.0f); // Ponto "c", centro da câmera
         glm::vec4 camera_view_vector = glm::vec4(-x_f,-y_f,-z_f,0.0f); // Vetor "view", sentido para onde a câmera está virada
-         // Vetor "up" fixado para apontar para o "céu" (eito Y glo
+        // Vetor "up" fixado para apontar para o "céu" (eito Y glo
         // Computamos a matriz "View" utilizando os parâmetros da câmera para
         // definir o sistema de coordenadas da câmera.  Veja slide 179 do
         // documento "Aula_08_Sistemas_de_Coordenadas.pdf".
@@ -657,7 +667,7 @@ int main(int argc, char* argv[])
             // Projeção Perspectiva.
             // Para definição do field of view (FOV), veja slide 228 do
             // documento "Aula_09_Projecoes.pdf".
-            float field_of_view = 3.141592 / 3.0f;
+            float field_of_view = 3.4 / 3.0f;
             projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
         }
         else
@@ -691,7 +701,7 @@ int main(int argc, char* argv[])
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
-              * Matrix_Scale(50.50f,50.0f,50.0)
+              * Matrix_Scale(50.50f,50.0f,50.0) * Matrix_Rotate_Y(180.0f);
            /* * Matrix_Rotate_Z(0.6f)
               * Matrix_Rotate_X(0.2f)
               * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 0.1f) */;
@@ -700,11 +710,17 @@ int main(int argc, char* argv[])
         DrawVirtualObject("sphere");
 
         // Desenhamos o modelo do coelho
-        model = Matrix_Translate(5.0f,0.0f,-10.0f)
-              /* Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f)*/;
+        /*model = Matrix_Translate(5.0f,0.0f,-10.0f) * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
+        */
+
+        // Modelo Heart
+        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, HEART);
+        DrawVirtualObject("heart");
 
         // Desenhamos o chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
@@ -745,17 +761,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
-        // Vaca 5
-        model = Matrix_Translate(vaca_x_5,vaca_y_1,vaca_z_5) * Matrix_Scale(vaca_tam_5,vaca_tam_5,vaca_tam_5);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
-        DrawVirtualObject("cow");
-
         // Heart
+        /*
         model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, HEART);
         DrawVirtualObject("heart");
+        */
 
         end_time = clock();
 
@@ -767,15 +779,15 @@ int main(int argc, char* argv[])
 
         start_time = end_time;
 
-        if (hitvaca(g_CameraX,g_CameraZ))
+        if (hitvaca(g_CameraX,g_CameraZ) && (!invul))
         {
             life--;
             gameover = true;
         }
-        if (hitcoelho (g_CameraX, g_CameraZ))
+        if (hitheart(g_CameraX, g_CameraZ) && (!invul))
         {
             gameover = true;
-            picked_bunnies ++;
+            picked_hearts ++;
             aumenta_nivel();
         }
 
@@ -824,6 +836,7 @@ int main(int argc, char* argv[])
         // usuário (teclado, mouse, ...). Caso positivo, as funções de callback
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
+
         glfwPollEvents();
         if (gameover == false) {
             free_view_control(0.05f);
@@ -838,10 +851,10 @@ int main(int argc, char* argv[])
             if (one_time){
                 g_CameraPhi = 0.0f;
                 g_CameraTheta = 0.0f;
+                move_player(400.0f,g_CameraY,400.0f);
             }
             one_time = 0;
-            move_player(400.0f,g_CameraY,400.0f);
-            g_FreeCamera = false;
+            //g_FreeCamera = false;
         }
     }
 }
@@ -1598,12 +1611,17 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     // Se o usuario apertar a tecla F, utilizamos a free camera
 	if (key == GLFW_KEY_F && action == GLFW_PRESS)
 	{
+	    invul = false;
 		g_FreeCamera = true;
+        g_CameraPhi = 0.0f;
+        g_CameraTheta = 0.0f;
+		move_player(player_initial_pos_x, player_initial_pos_y, player_initial_pos_z);
 	}
 
     // Se o usuario apertar a tecla L, utilizamos a camera look-at
 	if (key == GLFW_KEY_L && action == GLFW_PRESS)
 	{
+	    invul = true;
 		g_FreeCamera = false;
 	}
 
