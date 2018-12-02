@@ -798,6 +798,17 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, GAMEOVER);
         DrawVirtualObject("plane");
 
+
+        // Bézier
+        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -8.0f);
+        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
+        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
+        glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
+        model = Matrix_Translate(novo_ponto.x,0.0,novo_ponto.y) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, BALL);
+        DrawVirtualObject("sphere");
+
         // Vaca 1
         model = Matrix_Translate(vaca_x_1,vaca_y_1,vaca_z_1) * Matrix_Scale(vaca_tam_1,vaca_tam_1,vaca_tam_1);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
@@ -817,7 +828,7 @@ int main(int argc, char* argv[])
         DrawVirtualObject("cow");
 
         // Vaca 4
-        model = Matrix_Translate(vaca_x_4,vaca_y_4,vaca_z_4) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
+        model = Matrix_Translate(vaca_x_4,vaca_y_4,novo_ponto.y) * Matrix_Scale(vaca_tam_4,vaca_tam_4,vaca_tam_4);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
@@ -830,15 +841,6 @@ int main(int argc, char* argv[])
         DrawVirtualObject("heart");
         */
 
-        // Bézier
-        glm::vec3 p1 = glm::vec3(1.5f, 0.0f, -8.0f);
-        glm::vec3 p2 = glm::vec3(-0.5f, 7.0f, -8.0f);
-        glm::vec3 p3 = glm::vec3(-2.0f, 0.0f, -8.0f);
-        glm::vec3 novo_ponto = move_ao_longo_bezier(p1, p2, p2, p3);
-        model = Matrix_Translate(novo_ponto.x,novo_ponto.y,novo_ponto.z) * Matrix_Scale(vaca_tam_2,vaca_tam_2,vaca_tam_2);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, BALL);
-        DrawVirtualObject("sphere");
         end_time = clock();
 
         // velocidade da vacaclc
