@@ -70,6 +70,9 @@
 #define vaca_tam_3 2.0f
 #define vaca_tam_4 4.0f
 #define vaca_tam_5 50.0f
+#define heart_x 0.0f
+#define heart_y -0.5f
+#define heart_z 0.0f
 float vaca_vel_1 = 0.06f;
 float vaca_vel_2 = 0.12f;
 float vaca_vel_3 = 0.09f;
@@ -78,15 +81,13 @@ float vaca_x_1 = vaca_inicial;
 float vaca_x_2 = vaca_inicial;
 float vaca_x_3 = vaca_inicial;
 float vaca_x_4 = vaca_inicial;
-float vaca_x_5 = -600.0f;
 float vaca_z_1 = 0.0f;
 float vaca_z_2 = -1.5f;
 float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
-float vaca_z_5 = 1.5f;
 int nivel = 1;
 int life = 5;
-int picked_bunnies = 0;
+int picked_hearts = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
 long start_time, end_time, elapsed;
@@ -254,13 +255,14 @@ void aumenta_nivel(void);
 bool isoutofbounds (float x,float z);
 bool hitcoelho (float x, float z);
 bool hitvaca (float x, float z);
+bool hitheart (float x, float z);
 
 // Número de texturas carregadas pela função LoadTextureImage()
 GLuint g_NumLoadedTextures = 0;
 
-#define player_initial_pos_x 3.0f
+#define player_initial_pos_x 0.0f
 #define player_initial_pos_y 0.0f
-#define player_initial_pos_z 12.0f
+#define player_initial_pos_z 15.0f
 
 #define game_over_pos_x 0.0f
 #define game_over_pos_y 0.0f
@@ -352,6 +354,12 @@ bool hitcoelho (float x, float z)
     {
         return true;
     }
+    else return false;
+}
+
+bool hitheart (float x, float z){
+    if (((x>=heart_x -0.5f) && (x<=heart_x+0.5f) && (z>=heart_z -0.2f) && (z<=heart_z+0.2f)))
+        return true;
     else return false;
 }
 
@@ -658,7 +666,7 @@ int main(int argc, char* argv[])
             // Projeção Perspectiva.
             // Para definição do field of view (FOV), veja slide 228 do
             // documento "Aula_09_Projecoes.pdf".
-            float field_of_view = 3.141592 / 3.0f;
+            float field_of_view = 3.4 / 3.0f;
             projection = Matrix_Perspective(field_of_view, g_ScreenRatio, nearplane, farplane);
         }
         else
@@ -701,11 +709,17 @@ int main(int argc, char* argv[])
         DrawVirtualObject("sphere");
 
         // Desenhamos o modelo do coelho
-        model = Matrix_Translate(5.0f,0.0f,-10.0f)
-              /* Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f)*/;
+
+        /*model = Matrix_Translate(5.0f,0.0f,-10.0f) * Matrix_Rotate_X(g_AngleX + (float)glfwGetTime() * 0.1f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
+        */
+        // Desenhamos o modelo Heart
+        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, HEART);
+        DrawVirtualObject("heart");
 
         // Desenhamos o chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
@@ -746,17 +760,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
-        // Vaca 5
-        model = Matrix_Translate(vaca_x_5,vaca_y_1,vaca_z_5) * Matrix_Scale(vaca_tam_5,vaca_tam_5,vaca_tam_5);
-        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(object_id_uniform, COW);
-        DrawVirtualObject("cow");
-
         // Heart
-        model = Matrix_Translate(5.0f,-0.5f,5.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        /*
+        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, HEART);
         DrawVirtualObject("heart");
+        */
 
         end_time = clock();
 
@@ -773,10 +783,10 @@ int main(int argc, char* argv[])
             life--;
             gameover = true;
         }
-        if (hitcoelho (g_CameraX, g_CameraZ))
+        if (hitheart(g_CameraX, g_CameraZ))
         {
             gameover = true;
-            picked_bunnies ++;
+            picked_hearts ++;
             aumenta_nivel();
         }
 
