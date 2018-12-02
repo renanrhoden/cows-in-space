@@ -9,7 +9,7 @@
 //
 //                    Cows in Space
 //
-//          Grupo: Gabriel Martins e Ricardo Belo
+//          Grupo: Gabriel Martins e Renan Rhoden
 //
 //
 
@@ -37,8 +37,6 @@
 #include <algorithm>
 #include <windows.h>
 #include <time.h>
-
-//#include <mmsystem.h>
 
 // Headers das bibliotecas OpenGL
 #include <glad/glad.h>   // Criação de contexto OpenGL 3.3
@@ -86,21 +84,12 @@ float vaca_z_3 = 1.5f;
 float vaca_z_4 = 3.0f;
 float vaca_z_5 = 1.5f;
 int nivel = 1;
-int life = 5;
+int life = 1;
 int picked_bunnies = 0;
 bool gameover = false;
 int ultimo_segundo = 0;
 long start_time, end_time, elapsed;
-
- float StartPointX = 0;
- float StartPointY = 0;
- float ControlPointX = 20;
- float ControlPointY = 50;
- float EndPointX  = 50;
- float EndPointY  = 0;
- float BezierTime;
- float CurveX;
- float CurveY;
+int one_time = 1;
 
 
 
@@ -209,10 +198,12 @@ float g_AngleX = 0.0f;
 float g_AngleY = 0.0f;
 float g_AngleZ = 0.0f;
 
+// Variáveis para as teclas WASD, utilizadas na free camera
 bool g_WKeyPressed = false;
 bool g_AKeyPressed = false;
 bool g_SKeyPressed = false;
 bool g_DKeyPressed = false;
+
 // "g_LeftMouseButtonPressed = true" se o usuário está com o botão esquerdo do mouse
 // pressionado no momento atual. Veja função MouseButtonCallback().
 bool g_LeftMouseButtonPressed = false;
@@ -240,6 +231,9 @@ bool g_UsePerspectiveProjection = true;
 
 // Variável que controla se o texto informativo será mostrado na tela.
 bool g_ShowInfoText = true;
+
+// Variável que controla o tipo de camera utilizada, free camera ou look-at.
+bool g_FreeCamera = true;
 
 // Variáveis que definem um programa de GPU (shaders). Veja função LoadShadersFromFiles().
 GLuint vertex_shader_id;
@@ -289,24 +283,26 @@ int walk_flag = 0;
 #define up_value 0.005f;
 void walkeffect()
 {
-    if(up==1)
-    {
-        g_CameraY += up_value;
-        walk_flag++;
-        if(walk_flag > step_number)
+    if(!gameover){
+        if(up==1)
         {
-            walk_flag = 0;
-            up = 0;
+            g_CameraY += up_value;
+            walk_flag++;
+            if(walk_flag > step_number)
+            {
+                walk_flag = 0;
+                up = 0;
+            }
         }
-    }
-    else
-    {
-        g_CameraY += -up_value;
-        walk_flag++;
-        if(walk_flag > step_number)
+        else
         {
-            walk_flag = 0;
-            up = 1;
+            g_CameraY += -up_value;
+            walk_flag++;
+            if(walk_flag > step_number)
+            {
+                walk_flag = 0;
+                up = 1;
+            }
         }
     }
 
@@ -337,16 +333,6 @@ bool isoutofbounds (float x,float z)
     if (
         //Bounds do mapa
         ((x<=-30)||(x>=30)||(z>=30)||(z<=-30))
-        ||
-        //Bounds das cercas da esquerda
-        ((x<=1.89)&&(x>=-50)&&(z<=5.78)&&(z>=5.40))
-        ||
-        ((x<=1.89)&&(x>=-50)&&(z<=-4.1)&&(z>=-4.4))
-        ||
-        //Bounds das cercads da direita
-        ((x>=5.20)&&(x<=50)&&(z<=5.78)&&(z>=5.40))
-        ||
-        ((x>=5.20)&&(x<=50)&&(z>=-4.4)&&(z<=-4.0))
         )
     {
         return true;
@@ -538,14 +524,13 @@ int main(int argc, char* argv[])
     LoadShadersFromFiles();
 
     // Carregamos duas imagens para serem utilizadas como textura
-    LoadTextureImage("../../data/tc-earth_daymap_surface.jpg");      // TextureImage0
-    LoadTextureImage("../../data/tc-earth_nightmap_citylights.gif"); // TextureImage1
-    LoadTextureImage("../../data/moon.jpg"); //TextureImage2
-    LoadTextureImage("../../data/stars.png");//TextureImage3
-    LoadTextureImage("../../data/woodtex.jpg");//TextureImage4
-    LoadTextureImage("../../data/cow.jpg");//TextureImage5
-    LoadTextureImage("../../data/golden.jpg");//TextureImage6
-    LoadTextureImage("../../data/gameover.png");//TextureImage11
+    LoadTextureImage("../../data/moon.jpg"); //TextureImage0
+    LoadTextureImage("../../data/stars.png");//TextureImage1
+    LoadTextureImage("../../data/cow.jpg");//TextureImage2
+    LoadTextureImage("../../data/bunny.jpg");//TextureImage3
+    LoadTextureImage("../../data/gameover.png");//TextureImage4
+    LoadTextureImage("../../data/heart.jpg");//TextureImage5
+
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -564,10 +549,9 @@ int main(int argc, char* argv[])
     ComputeNormals(&cowmodel);
     BuildTrianglesAndAddToVirtualScene(&cowmodel);
 
-    ObjModel fencemodel("../../data/fence.obj");
-    ComputeNormals(&fencemodel);
-    BuildTrianglesAndAddToVirtualScene(&fencemodel);
-
+    ObjModel heartmodel("../../data/heart.obj");
+    ComputeNormals(&heartmodel);
+    BuildTrianglesAndAddToVirtualScene(&heartmodel);
 
     if ( argc > 1 )
     {
@@ -637,6 +621,17 @@ int main(int argc, char* argv[])
 //        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
 //        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
 
+        /*float r = (g_FreeCamera) ? 1.0f : g_CameraDistance;
+        float y = r*sin(g_CameraPhi);
+        float z = r*cos(g_CameraPhi)*cos(g_CameraTheta);
+        float x = r*cos(g_CameraPhi)*sin(g_CameraTheta);*/
+
+        if (!g_FreeCamera)
+		{
+            g_CameraX = 400.0;
+            g_CameraY = g_CameraY;
+            g_CameraZ = 400.0f;
+		}
 
         //glm::vec4 camera_lookat_l    = glm::vec4(0.0f,0.0f,0.0f,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
         glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f);
@@ -691,8 +686,8 @@ int main(int argc, char* argv[])
         #define BUNNY  1
         #define PLANE  2
         #define COW 3
-        #define FENCE 4
-        #define GAMEOVER 9
+        #define GAMEOVER 4
+        #define HEART 5
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(0.0f,0.0f,0.0f)
@@ -711,12 +706,13 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, BUNNY);
         DrawVirtualObject("bunny");
 
-        // Desenhamos o plano do chão
+        // Desenhamos o chão
         model = Matrix_Translate(0.0f,-1.1f,0.0f)
                 * Matrix_Scale (50.0f,50.0f,50.0f);
         glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(object_id_uniform, PLANE);
         DrawVirtualObject("plane");
+
         //PLANE GAME OVER
         model = Matrix_Translate(400.0f,0.0f,396.0f)
                 * Matrix_Scale (1.5f,1.5f,1.5f)
@@ -755,14 +751,16 @@ int main(int argc, char* argv[])
         glUniform1i(object_id_uniform, COW);
         DrawVirtualObject("cow");
 
+        // Heart
+        model = Matrix_Translate(0.0f,-0.5f,0.0f) * Matrix_Scale(0.0025f,0.0025f,0.0025f) * Matrix_Rotate_Y(g_AngleY + (float)glfwGetTime() * 1.2f);
+        glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(object_id_uniform, HEART);
+        DrawVirtualObject("heart");
+
         end_time = clock();
-        BezierTime = (end_time - start_time) / CLOCKS_PER_SEC;
-        vaca_x_1 += (((1-BezierTime)*(1-BezierTime)) * StartPointX) + (2 * BezierTime * (1 - BezierTime) * ControlPointX) + ((BezierTime * BezierTime) * EndPointX);
-//        vaca_y_1 = (((1-BezierTime)*(1-BezierTime)) * StartPointY) + (2 * BezierTime * (1 - BezierTime) * ControlPointY) + ((BezierTime * BezierTime) * EndPointY);
+
         // velocidade da vacaclc
-       // vaca_x_1+= vaca_vel_1 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
-       // vaca_x_1 += CurveX;
-       // vaca_y_1 += CurveY;
+        vaca_x_1+= vaca_vel_1 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
         vaca_x_2+= vaca_vel_2 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
         vaca_x_3+= vaca_vel_3 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
         vaca_x_4+= vaca_vel_4 + 10 * (end_time - start_time) / CLOCKS_PER_SEC;
@@ -781,26 +779,11 @@ int main(int argc, char* argv[])
             aumenta_nivel();
         }
 
-        if ((glfwGetTime()) > 5 && (glfwGetTime()) < 300){
-            //PlaySound(TEXT("../../data/bgm.wav"), NULL, SND_ASYNC | SND_LOOP);
-            glfwSetTime(500);
-        }
-
         if(vaca_x_1>volta_vaca){
             vaca_x_1 = vaca_inicial;
         }
         if(vaca_x_2>volta_vaca){
             vaca_x_2 = vaca_inicial;
-            if(picked_bunnies == easter){
-                picked_bunnies = 0;
-                vaca_x_5 = -60;
-                if(!gameover)
-                {
-                //    PlaySound(TEXT("../../data/moo2.wav"), NULL, SND_ASYNC);
-                    glfwSetTime(0);
-                }
-
-            }
         }
         if(vaca_x_3>volta_vaca){
             vaca_x_3 = vaca_inicial;
@@ -808,60 +791,6 @@ int main(int argc, char* argv[])
         if(vaca_x_4>volta_vaca){
             vaca_x_4 = vaca_inicial;
         }
-
-
-        #define distance_fence 3.8f
-        // Desenha o cercado esquerdo
-        float pos_x = 0.0f;
-        int i = 0;
-        for (i=0; i<10; i++)
-        {
-            model = Matrix_Translate(pos_x,-1.0f,0.0f)
-                  * Matrix_Scale (3.0f,3.0f,3.0f);
-            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, FENCE);
-            DrawVirtualObject("fence");
-            pos_x+=distance_fence;
-        }
-
-        pos_x = 2 * -distance_fence;
-
-        for (i=0; i<10; i++)
-        {
-            if (i != 10)
-            {
-            model = Matrix_Translate(pos_x,-1.0f,0.0f)
-                  * Matrix_Scale (3.0f,3.0f,3.0f);
-            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, FENCE);
-            DrawVirtualObject("fence");
-            pos_x-=distance_fence;
-            }
-        }
-        pos_x = 0.0f;
-        // Desenha o cercado direito
-        for (i=0; i<10; i++)
-        {
-            model = Matrix_Translate(pos_x,-1.0f,10.0f)
-                  * Matrix_Scale (3.0f,3.0f,3.0f);
-            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, FENCE);
-            DrawVirtualObject("fence");
-            pos_x+=distance_fence;
-        }
-        pos_x = 2* -distance_fence;
-
-        for (i=0; i<10; i++)
-        {
-            model = Matrix_Translate(pos_x,-1.0f,10.0f)
-                  * Matrix_Scale (3.0f,3.0f,3.0f);
-            glUniformMatrix4fv(model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(object_id_uniform, FENCE);
-            DrawVirtualObject("fence");
-            pos_x-=distance_fence;
-        }
-
-
 
         // Pegamos um vértice com coordenadas de modelo (0.5, 0.5, 0.5, 1) e o
         // passamos por todos os sistemas de coordenadas armazenados nas
@@ -896,24 +825,23 @@ int main(int argc, char* argv[])
         // definidas anteriormente usando glfwSet*Callback() serão chamadas
         // pela biblioteca GLFW.
         glfwPollEvents();
-        if (gameover == false)
-        {
-        free_view_control(0.05f);
+        if (gameover == false) {
+            free_view_control(0.05f);
         }
-        else
-        {
-        if (life > 0)
-        {
+        else {
+            if (life > 0) {
             move_player(player_initial_pos_x, g_CameraY, player_initial_pos_z);
             gameover = false;
             g_CameraPhi = 0.0f;
             g_CameraTheta = 0.0f;
-        }
-        else
-        {
-            g_CameraPhi = 0.0f;
-            g_CameraTheta = 0.0f;
+        } else {
+            if (one_time){
+                g_CameraPhi = 0.0f;
+                g_CameraTheta = 0.0f;
+            }
+            one_time = 0;
             move_player(400.0f,g_CameraY,400.0f);
+            g_FreeCamera = false;
         }
     }
 }
@@ -1062,12 +990,6 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(program_id, "TextureImage3"), 3);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage4"), 4);
     glUniform1i(glGetUniformLocation(program_id, "TextureImage5"), 5);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage6"), 6);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage7"), 7);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage8"), 8);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage9"), 9);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage10"), 10);
-    glUniform1i(glGetUniformLocation(program_id, "TextureImage11"), 11);
     glUseProgram(0);
 }
 
@@ -1672,6 +1594,18 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     {
         g_ShowInfoText = !g_ShowInfoText;
     }
+
+    // Se o usuario apertar a tecla F, utilizamos a free camera
+	if (key == GLFW_KEY_F && action == GLFW_PRESS)
+	{
+		g_FreeCamera = true;
+	}
+
+    // Se o usuario apertar a tecla L, utilizamos a camera look-at
+	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	{
+		g_FreeCamera = false;
+	}
 
     // Se o usuário apertar a tecla R, recarregamos os shaders dos arquivos "shader_fragment.glsl" e "shader_vertex.glsl".
     if (key == GLFW_KEY_R && action == GLFW_PRESS)
