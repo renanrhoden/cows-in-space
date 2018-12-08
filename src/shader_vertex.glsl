@@ -88,5 +88,6 @@ void main()
     vec4 h = normalize(v + l);
     vec3 phong_specular_term  = Ks * I * pow(max(0, dot(n, h)), q);
 
+
   	cor_ball_gourad = lambert_diffuse_term + ambient_term + phong_specular_term;
 }

@@ -87,6 +87,11 @@ void main()
     vec3 Ka; // Refletância ambiente
     float q; // Expoente especular para o modelo de iluminação de Phong
 
+    Kdif = vec3(0.08,0.4,0.8);
+    Ks = vec3(0.8,0.8,0.8);
+    Ka = vec3(0.004,0.2,0.4);
+    q = 32.0;
+
     if ( object_id == SPHERE )
     {
         // PREENCHA AQUI as coordenadas de textura da esfera, computadas com
@@ -125,10 +130,10 @@ void main()
 
         // PREENCHA AQUI
         // Propriedades espectrais do coelho
-        Kdif = vec3(1.0, 1.0, 1.0);
-        Ks = vec3(1.0, 1.0, 0.0);
-        Ka = vec3(1.0,1.0,1.0);
-        q = 40.0;
+        Kdif = vec3(0.08,0.4,0.8);
+        Ks = vec3(0.8,0.8,0.8);
+        Ka = vec3(0.004,0.2,0.4);
+        q = 32.0;
 
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
@@ -234,7 +239,7 @@ void main()
     }
     else if (object_id == COW)
     {
-    color = (Kd_cow * (lambert_diffuse_term + 0.01));
+    color = (Kd_cow * (lambert + 0.1))+ phong_specular_term;
     }
     else if (object_id == GAMEOVER)
     {
@@ -242,7 +247,7 @@ void main()
     }
     else if (object_id == HEART)
     {
-    color = (Kd_heart* (lambert_diffuse_term + 0.01))+ phong_specular_term;
+    color = (Kd_heart * (lambert + 0.1))+ phong_specular_term;
     }
     else if (object_id == BALL)
     {

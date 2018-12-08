@@ -1696,6 +1696,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     // Se o usuário apertar a tecla espaço, resetamos o jogo quando estiver em Game Over
     if (key == GLFW_KEY_SPACE && action == GLFW_PRESS && gameover)
     {
+        one_time = 1;
         nivel = 1;
         vaca_vel_1 = 0.06f;
         vaca_vel_2 = 0.12f;
